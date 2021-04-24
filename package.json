@@ -1,0 +1,16 @@
+{
+  "name": "apisyncpp",
+  "version": "1.0.0",
+  "description": "api para actualizar los pp de zoho crm con los de salesiq",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Axel Martinez",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.17.1",
+    "mocha": "^8.3.2"
+  }
+}
