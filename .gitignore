@@ -2,6 +2,7 @@ node_modules
 .idea
 .vscode
 /src/config/config.ts
-/src/config/data.json
+/src/config/data*.json
 /dist
+/Files
 dist/*

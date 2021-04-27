@@ -13,6 +13,21 @@ class JsonService {
             console.log('The file has been saved!');
         });
     }
+    readJson(path) {
+        if (!this.fileExists)
+            return null;
+        let dataJason = fs_1.default.readFileSync(path);
+        return JSON.parse(dataJason.toString());
+    }
+    fileExists(path) {
+        try {
+            fs_1.default.accessSync(path);
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
+    }
 }
 exports.default = JsonService;
 //# sourceMappingURL=JsonService.js.map

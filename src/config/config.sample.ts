@@ -1,8 +1,16 @@
 const CONFIG = {
-    "TokenSalesIQ": String("TokenSalesIQ"),
-    "RefreshTokenSalesIQ": String("RefreshTokenSalesIQ"),
-    "client_id": String("client_id"),
-    "client_secret": String("client_secret"),
+    "SalesIQ": {
+        "RefreshToken": String(""),
+        "client_id": String(""),
+        "client_secret": String(""),
+        "fielname": "dataSalesIQ"
+    },
+    "ZohoCRM": {
+        "client_id": String(""),
+        "client_secret": String(""),
+        "RefreshToken": String(""),
+        "fielname": "dataZohoCRM"
+    }
 };
 
 export default CONFIG;

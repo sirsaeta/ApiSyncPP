@@ -8,6 +8,22 @@ class JsonService {
 				console.log('The file has been saved!'); 
 		});
 	}
+
+	readJson(path: string) : JSON {
+		if(!this.fileExists)
+			return null;
+		let dataJason: Buffer = fs.readFileSync(path);
+		return JSON.parse(dataJason.toString());
+	}
+
+	fileExists(path: string): boolean {
+		try {
+			fs.accessSync(path);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
 }
 
 export default JsonService;
