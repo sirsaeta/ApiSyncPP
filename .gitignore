@@ -2,5 +2,6 @@ node_modules
 .idea
 .vscode
 /src/config/config.ts
+/src/config/data.json
 /dist
 dist/*

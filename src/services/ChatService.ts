@@ -2,16 +2,15 @@ import JsonService from './JsonService';
 import axios from 'axios';
 
 const instance = axios.create({
-	baseURL: 'https://some-domain.com/api/',
-	timeout: 1000,
-	headers: {'X-Custom-Header': 'foobar'}
+	baseURL: 'https://salesiq.zoho.com/api/v1/sales1.oceanomedicina/',
+	timeout: 1000
 });
 
 class ChatService {
 	constructor() { }
 
 	public searchChat() {
-		axios.get('/user?ID=12345')
+		axios.get('/chats?ID=12345')
 			.then(function (response) {
 				// handle success
 				console.log(response);
