@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const JsonService_1 = __importDefault(require("./JsonService"));
 const axios_1 = __importDefault(require("axios"));
 const AuthService_1 = __importDefault(require("./AuthService"));
+const config_1 = __importDefault(require("../config/config"));
 class ChatService {
     constructor() {
         const authService = new AuthService_1.default();
@@ -19,7 +20,7 @@ class ChatService {
         });
     }
     GetAllChat() {
-        this.instanceAxios.get('/chats')
+        this.instanceAxios.get(`/chats?limits=${config_1.default.apps.chat.limit}`)
             .then(function (response) {
             // handle success
             console.log(response.data);
@@ -49,7 +50,7 @@ class ChatService {
     }
     static SaveChatsJson(objectToSave) {
         let jsonService = new JsonService_1.default();
-        jsonService.saveJson('Files/chats.json', objectToSave);
+        jsonService.saveJson(`Files/${config_1.default.apps.chat.fielname}.json`, objectToSave);
     }
 }
 exports.default = ChatService;

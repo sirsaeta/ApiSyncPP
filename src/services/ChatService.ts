@@ -20,7 +20,7 @@ class ChatService {
 	}
 
 	public GetAllChat() {
-		this.instanceAxios.get(`/chats?limits=${config.chat.limit}`)
+		this.instanceAxios.get(`/chats?limits=${config.apps.chat.limit}`)
 			.then(function (response) {
 				// handle success
 				console.log(response.data);
@@ -52,7 +52,7 @@ class ChatService {
 
 	private static SaveChatsJson(objectToSave: any) {
 		let jsonService = new JsonService();
-		jsonService.saveJson(`Files/${config.chat.fielname}.json`,objectToSave);
+		jsonService.saveJson(`Files/${config.apps.chat.fielname}.json`,objectToSave);
 	}
 }
 

@@ -10,7 +10,7 @@ class JsonService {
         fs_1.default.writeFile(path, JSON.stringify(objectToSave), 'utf8', (err) => {
             if (err)
                 throw err;
-            console.log('The file has been saved!');
+            console.log(`The file has been saved! ${path}`);
         });
     }
     readJson(path) {
