@@ -4,7 +4,7 @@ import AuthService from "./AuthService";
 import config from '../config/config';
 
 
-class ChatService {
+class ConversationService {
 	public instanceAxios: AxiosInstance
 
 	constructor() {
@@ -19,12 +19,12 @@ class ChatService {
 		});
 	}
 
-	public GetAllChat() {
-		this.instanceAxios.get(`/chats?limits=${config.chat.limit}`)
+	public GetAllConversations() {
+		this.instanceAxios.get(`/conversations?attender_id=${config.conversation.attender_id}&limits=${config.conversation.limit}`)
 			.then(function (response) {
 				// handle success
 				console.log(response.data);
-				ChatService.SaveChatsJson(response.data);
+				ConversationService.SaveConversationsJson(response.data);
 			})
 			.catch(function (error) {
 				// handle error
@@ -35,8 +35,8 @@ class ChatService {
 			});
 	}
 
-	public SearchChat() {
-		axios.get('/chats?ID=12345')
+	public SearchConversation() {
+		axios.get('/conversations?ID=12345')
 			.then(function (response) {
 				// handle success
 				console.log(response);
@@ -50,10 +50,10 @@ class ChatService {
 			});
 	}
 
-	private static SaveChatsJson(objectToSave: any) {
+	private static SaveConversationsJson(objectToSave: any) {
 		let jsonService = new JsonService();
-		jsonService.saveJson(`Files/${config.chat.fielname}.json`,objectToSave);
+		jsonService.saveJson(`Files/${config.conversation.fielname}.json`,objectToSave);
 	}
 }
 
-export default ChatService;
+export default ConversationService;
