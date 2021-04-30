@@ -20,7 +20,15 @@ class ChatService {
 	}
 
 	public GetAllChat() {
-		this.instanceAxios.get(`/chats?limits=${config.apps.chat.limit}`)
+		let paramsConversation = config.apps.chat.params;
+		let url: string = "chats";
+		if (Object.keys(paramsConversation).length>0) url += "?"
+		let arrParams: Array<string>=[];
+		for (let [paramKey,paramValue] of Object.entries(paramsConversation)) {
+			arrParams.push(`${paramKey}=${paramValue}`)
+		}
+		url += arrParams.join("&");
+		this.instanceAxios.get(url)
 			.then(function (response) {
 				// handle success
 				console.log(response.data);

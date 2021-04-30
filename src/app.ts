@@ -1,9 +1,9 @@
-import express from 'express';
-import router from './routes/app';
+//import express from 'express';
+//import router from './routes/app';
 import ChatService from './services/ChatService';
 import ConversationService from './services/ConversationService';
 import config from './config/config';
-const app = express();
+//const app = express();
 const port = 3000;
 
 for (let [appsKey, appsValue] of Object.entries(config.apps)) {
@@ -27,4 +27,4 @@ app.listen(port, () => {
 	console.log(`Example app listening at http://localhost:${port}`)
 })*/
 
-module.exports = app;
+//module.exports = app;

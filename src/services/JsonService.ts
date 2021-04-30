@@ -2,6 +2,18 @@ import fs from 'fs';
 
 class JsonService {
 	constructor() {}
+	async createFile(path: string, stringToAdd: string) {
+		await fs.writeFile(path, stringToAdd, function (err) {
+			if (err) throw err;
+		});
+	}
+
+	updateFile(path: string, stringToAdd: string) {
+		fs.appendFile(path, stringToAdd,'utf8', (err) => {
+			if (err) throw err;
+		});
+	}
+
 	saveJson(path: string, objectToSave: any) {
 		fs.writeFile(path, JSON.stringify(objectToSave),'utf8', (err) => { 
 			if (err) throw err; 
