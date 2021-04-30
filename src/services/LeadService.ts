@@ -1,6 +1,5 @@
 import JsonService from './JsonService';
 import axios, { AxiosInstance } from 'axios';
-import AuthService from "./AuthService";
 import config from '../config/config';
 
 
@@ -9,10 +8,8 @@ class LeadService {
 	private jsonService: JsonService;
 	private static jsonServiceStatic: JsonService;
 
-	constructor() {
+	constructor(tokenJSON) {
 		this.jsonService = new JsonService();
-		const authService = new AuthService();
-		let tokenJSON = authService.GetTokenSalesIQ();
 		this.instanceAxios = axios.create({
 			baseURL: 'https://www.zohoapis.com/crm/v2/',
 			timeout: 1000,
@@ -52,7 +49,7 @@ class LeadService {
 			.then(function (response) {
 				// handle success
 				console.log(response.data);
-				LeadService.SaveConversationJson(response.data,id);
+				LeadService.SaveLeadJson(response.data,id);
 			})
 			.catch(function (error) {
 				// handle error
@@ -67,12 +64,8 @@ class LeadService {
 		this.jsonServiceStatic.saveJson(`Files/${config.apps.lead.fielname}.json`,objectToSave);
 	}
 
-	private static SaveConversationJson(objectToSave: any,id: string) {
-		this.jsonServiceStatic.saveJson(`Files/Conversations/${config.apps.conversation.fielname}_${id}.json`,objectToSave);
-	}
-
-	private static SaveLeadJson(objectToSave: any) {
-		this.jsonServiceStatic.saveJson(`Files/Leads/lead_${objectToSave.id}.json`,objectToSave);
+	private static SaveLeadJson(objectToSave: any,id: string) {
+		this.jsonServiceStatic.saveJson(`Files/Leads/lead_${id}.json`,objectToSave);
 	}
 
 	private SaveLeadsJson(stringToAdd: string) {

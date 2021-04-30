@@ -1,6 +1,5 @@
 import JsonService from './JsonService';
 import axios, { AxiosInstance } from 'axios';
-import AuthService from "./AuthService";
 import config from '../config/config';
 
 
@@ -9,10 +8,8 @@ class ConversationService {
 	private jsonService: JsonService;
 	private static jsonServiceStatic: JsonService;
 
-	constructor() {
+	constructor(tokenJSON) {
 		this.jsonService = new JsonService();
-		const authService = new AuthService();
-		let tokenJSON = authService.GetTokenSalesIQ();
 		this.instanceAxios = axios.create({
 			baseURL: 'https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/',
 			timeout: 1000,

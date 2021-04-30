@@ -5,22 +5,11 @@ import JsonService from './JsonService';
 class AuthService {
 	constructor() { }
 
-	public GetTokenSalesIQ() {
+	public async GetToken() {
 		let jsonService = new JsonService();
 		let jsonDataToken = jsonService.readJson(`src/config/${config.SalesIQ.fielname}.json`);
 		if(!jsonDataToken || Date.now() > jsonDataToken['expires_date']*1)
 			this.RefreshToken(config.SalesIQ.RefreshToken,config.SalesIQ.client_id,config.SalesIQ.client_secret,config.SalesIQ.fielname)
-				.then(function (jsonDataToken) {
-					return jsonDataToken;
-				});
-		return jsonDataToken
-	}
-
-	public GetTokenZohoCRM() {
-		let jsonService = new JsonService();
-		let jsonDataToken = jsonService.readJson(`src/config/${config.ZohoCRM.fielname}.json`);
-		if (Date.now() > jsonDataToken['expires_date']*1)
-			this.RefreshToken(config.ZohoCRM.RefreshToken,config.ZohoCRM.client_id,config.ZohoCRM.client_secret,config.ZohoCRM.fielname)
 				.then(function (jsonDataToken) {
 					return jsonDataToken;
 				});
