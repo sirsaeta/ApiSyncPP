@@ -22,9 +22,9 @@ authService.GetToken().then((token)=>{
 		else if(appsValue['enabled'] && appsKey==='conversation')
 		{
 			const conversationService = new ConversationService(token);
-			//conversationService.GetAllConversations();
-			let jsonConversations = conversationService.GetJSONAllConversations();
-			conversationService.SearchVisitorsInConversations(jsonConversations['data']);
+			conversationService.GetAllConversations();
+			//let jsonConversations = conversationService.GetJSONAllConversations();
+			//conversationService.SearchVisitorsInConversations(jsonConversations['data']);
 		}
 	}
 })

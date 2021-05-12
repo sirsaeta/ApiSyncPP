@@ -2,24 +2,28 @@ import JsonService from './JsonService';
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 
+function SaveConversationsJson(objectToSave: any) {
+	JsonService.saveJson(`Files/${config.apps.conversation.fielname}.json`,objectToSave);
+}
+
+function SaveLeadsJson(stringToAdd: string) {
+	JsonService.updateFile(`Files/Conversations_x_Leads.json`,stringToAdd);
+}
 
 class ConversationService {
 	public instanceAxios: AxiosInstance
-	private jsonService: JsonService;
-	private static jsonServiceStatic: JsonService;
 
 	constructor(tokenJSON) {
-		this.jsonService = new JsonService();
 		this.instanceAxios = axios.create({
 			baseURL: 'https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/',
-			timeout: 1000,
+			timeout: 10000,
 			headers: {
 				'Authorization': `Zoho-oauthtoken ${tokenJSON['access_token']}`
 			}
 		});
 	}
 
-	public GetAllConversations() {
+	public async GetAllConversations() {
 		let paramsConversation = config.apps.conversation.params;
 		let url: string = "conversations";
 		if (Object.keys(paramsConversation).length>0) url += "?"
@@ -32,8 +36,8 @@ class ConversationService {
 			.then(function (response) {
 				// handle success
 				//console.log(response.data);
-				ConversationService.SaveConversationsJson(response.data);
-				this.parent.SearchVisitorsInConversations(response.data.data);
+				SaveConversationsJson(response.data);
+				ConversationService.SearchVisitorsInConversations(response.data.data);
 			})
 			.catch(function (error) {
 				// handle error
@@ -60,33 +64,24 @@ class ConversationService {
 			});
 	}
 
-	private static SaveConversationsJson(objectToSave: any) {
-		this.jsonServiceStatic.saveJson(`Files/${config.apps.conversation.fielname}.json`,objectToSave);
-	}
-
 	private static SaveConversationJson(objectToSave: any,id: string) {
-		this.jsonServiceStatic.saveJson(`Files/Conversations/${config.apps.conversation.fielname}_${id}.json`,objectToSave);
+		JsonService.saveJson(`Files/Conversations/${config.apps.conversation.fielname}_${id}.json`,objectToSave);
 	}
 
 	private static SaveLeadJson(objectToSave: any) {
-		this.jsonServiceStatic.saveJson(`Files/Leads/lead_${objectToSave.id}.json`,objectToSave);
+		JsonService.saveJson(`Files/Leads/lead_${objectToSave.id}.json`,objectToSave);
 	}
 
-	private SaveLeadsJson(stringToAdd: string) {
-		this.jsonService.updateFile(`Files/Conversations_x_Leads.json`,stringToAdd);
-	}
-
-	public async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
+	public static async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
 		let listIdLeads: Array<string> = [];
-		await this.jsonService.createFile(`Files/Conversations_x_Leads.json`,`{"data":[`)
+		await JsonService.createFile(`Files/Conversations_x_Leads.json`,`{"data":[`)
 		let promise = new Promise((resolve, reject) => {
 			for (let conversationResponse of conversationsResponse) {
 				/*
 				conversationResponse['visitor'].id &&
 				this.SearchConversation(conversationResponse['id']);
 				 */
-				let jsonService = new JsonService();
-				let jsonConversation = jsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
+				let jsonConversation = JsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
 				let customer_info = '';
 				if(conversationResponse.customer_info && conversationResponse.customer_info.pp)
 					customer_info = conversationResponse.customer_info.pp;
@@ -99,7 +94,15 @@ class ConversationService {
 				{
 					listIdLeads.push(jsonConversation['data'].conversation_details.ex_info['2'].LEADID);
 					//ConversationService.SaveLeadJson({"conversation_id":conversationResponse.conversation_details.id,lead_id:conversationResponse.conversation_details.ex_info['2'].LEADID,"pp_conversation":customer_info})
-					this.SaveLeadsJson(`{"conversation_id":${conversationResponse.conversation_details.id},"lead_id":${conversationResponse.conversation_details.ex_info['2'].LEADID},"pp_conversation":"${customer_info}"},`)
+					SaveLeadsJson(`
+						{
+							"conversation_id":${conversationResponse.conversation_details.id},
+							"lead_id":${conversationResponse.conversation_details.ex_info['2'].LEADID},
+							"pp_conversation":"${customer_info}",
+							"url_conversation":"https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/conversations/${conversationResponse.conversation_details.id}/visitor",
+							"url_lead":"https://www.zohoapis.com/crm/v2/Leads/${conversationResponse.conversation_details.ex_info['2'].LEADID}"
+						},
+					`)
 				}
 			}
 			resolve("");
@@ -107,13 +110,13 @@ class ConversationService {
 
 		if (conversationsResponse && conversationsResponse.length>0)
 			promise.finally(() => {
-				this.SaveLeadsJson("]}")
+				SaveLeadsJson("]}")
 				console.log(listIdLeads.join());
 			});
 	}
 
 	public GetJSONAllConversations() {
-		return this.jsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
+		return JsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
 	}
 }
 

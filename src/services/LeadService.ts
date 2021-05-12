@@ -2,14 +2,14 @@ import JsonService from './JsonService';
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 
+function SaveLeadsJsonString(stringToAdd: string) {
+	JsonService.updateFile(`Files/Leads.json`,stringToAdd);
+}
 
 class LeadService {
 	public instanceAxios: AxiosInstance
-	private jsonService: JsonService;
-	private static jsonServiceStatic: JsonService;
 
 	constructor(tokenJSON) {
-		this.jsonService = new JsonService();
 		this.instanceAxios = axios.create({
 			baseURL: 'https://www.zohoapis.com/crm/v2/',
 			timeout: 1000,
@@ -61,27 +61,22 @@ class LeadService {
 	}
 
 	private static SaveLeadsJson(objectToSave: any) {
-		this.jsonServiceStatic.saveJson(`Files/${config.apps.lead.fielname}.json`,objectToSave);
+		JsonService.saveJson(`Files/${config.apps.lead.fielname}.json`,objectToSave);
 	}
 
 	private static SaveLeadJson(objectToSave: any,id: string) {
-		this.jsonServiceStatic.saveJson(`Files/Leads/lead_${id}.json`,objectToSave);
-	}
-
-	private SaveLeadsJson(stringToAdd: string) {
-		this.jsonService.updateFile(`Files/Leads.json`,stringToAdd);
+		JsonService.saveJson(`Files/Leads/lead_${id}.json`,objectToSave);
 	}
 
 	public async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
-		await this.jsonService.createFile(`Files/Leads.json`,`{"data":[`)
+		await JsonService.createFile(`Files/Leads.json`,`{"data":[`)
 		let promise = new Promise((resolve, reject) => {
 			for (let conversationResponse of conversationsResponse) {
 				/*
 				conversationResponse['visitor'].id &&
 				this.SearchConversation(conversationResponse['id']);
 				 */
-				let jsonService = new JsonService();
-				let jsonConversation = jsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
+				let jsonConversation = JsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
 				let customer_info = '';
 				if(conversationResponse.customer_info && conversationResponse.customer_info.pp)
 					customer_info = conversationResponse.customer_info.pp;
@@ -92,12 +87,12 @@ class LeadService {
 
 		if (conversationsResponse && conversationsResponse.length>0)
 			promise.finally(() => {
-				this.SaveLeadsJson("]}")
+				SaveLeadsJsonString("]}")
 			});
 	}
 
 	public GetJSONAllConversations() {
-		return this.jsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
+		return JsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
 	}
 
 	public SearchLeadInVisitors(conversationResponse: any, pp: string) {
@@ -109,7 +104,7 @@ class LeadService {
 		)
 		{
 			//ConversationService.SaveLeadJson({id:conversationResponse.conversation_details.ex_info['2'].LEADID,"pp":pp})
-			this.SaveLeadsJson(`{"id":${conversationResponse.conversation_details.ex_info['2'].LEADID},"pp":"${pp}"},`)
+			SaveLeadsJsonString(`{"id":${conversationResponse.conversation_details.ex_info['2'].LEADID},"pp":"${pp}"},`)
 		}
 		//for (let conversationResponse in conversationResponse.) {
 		/*

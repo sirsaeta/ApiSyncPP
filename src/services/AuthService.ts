@@ -6,8 +6,7 @@ class AuthService {
 	constructor() { }
 
 	public async GetToken() {
-		let jsonService = new JsonService();
-		let jsonDataToken = jsonService.readJson(`src/config/${config.SalesIQ.fielname}.json`);
+		let jsonDataToken = JsonService.readJson(`src/config/${config.SalesIQ.fielname}.json`);
 		if(!jsonDataToken || Date.now() > jsonDataToken['expires_date']*1)
 			this.RefreshToken(config.SalesIQ.RefreshToken,config.SalesIQ.client_id,config.SalesIQ.client_secret,config.SalesIQ.fielname)
 				.then(function (jsonDataToken) {
@@ -43,8 +42,7 @@ class AuthService {
 	}
 
 	private static SaveTokenJson(objectToSave,filename: string) {
-		let jsonService = new JsonService();
-		jsonService.saveJson(`src/config/${filename}.json`,objectToSave);
+		JsonService.saveJson(`src/config/${filename}.json`,objectToSave);
 	}
 }
 

@@ -41,8 +41,7 @@ class ChatService {
 	}
 
 	private static SaveChatsJson(objectToSave: any) {
-		let jsonService = new JsonService();
-		jsonService.saveJson(`Files/${config.apps.chat.fielname}.json`,objectToSave);
+		JsonService.saveJson(`Files/${config.apps.chat.fielname}.json`,objectToSave);
 	}
 }
 
