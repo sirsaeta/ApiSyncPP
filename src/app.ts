@@ -5,8 +5,8 @@ import LeadService from "./services/LeadService";
 import config from './config/config';
 
 const authService = new AuthService();
-authService.GetToken().then((token)=>{
-	for (let [appsKey, appsValue] of Object.entries(config.apps)) {
+authService.GetToken().then(async (token)=>{
+	for await (let [appsKey, appsValue] of Object.entries(config.apps)) {
 		if (appsValue['enabled'] && appsKey==='chat')
 		{
 			const chatService = new ChatService(token);
@@ -22,9 +22,11 @@ authService.GetToken().then((token)=>{
 		else if(appsValue['enabled'] && appsKey==='conversation')
 		{
 			const conversationService = new ConversationService(token);
-			conversationService.GetAllConversations();
-			//let jsonConversations = conversationService.GetJSONAllConversations();
-			//conversationService.SearchVisitorsInConversations(jsonConversations['data']);
+			//let jsonConversations = await conversationService.GetAllConversations();
+			let jsonConversations = conversationService.GetJSONAllConversations();
+			jsonConversations && conversationService.SearchVisitorsInConversations(jsonConversations['data']).finally(()=> {
+				console.log("genial")
+			});
 		}
 	}
 })

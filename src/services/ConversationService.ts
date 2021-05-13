@@ -11,7 +11,7 @@ function SaveLeadsJson(stringToAdd: string) {
 }
 
 class ConversationService {
-	public instanceAxios: AxiosInstance
+	private instanceAxios: AxiosInstance;
 
 	constructor(tokenJSON) {
 		this.instanceAxios = axios.create({
@@ -23,7 +23,7 @@ class ConversationService {
 		});
 	}
 
-	public async GetAllConversations() {
+	public async GetAllConversations(): Promise<any> {
 		let paramsConversation = config.apps.conversation.params;
 		let url: string = "conversations";
 		if (Object.keys(paramsConversation).length>0) url += "?"
@@ -37,30 +37,27 @@ class ConversationService {
 				// handle success
 				//console.log(response.data);
 				SaveConversationsJson(response.data);
-				ConversationService.SearchVisitorsInConversations(response.data.data);
+				return response.data;
+				//this.SearchVisitorsInConversations(response.data.data);
 			})
 			.catch(function (error) {
 				// handle error
 				console.log(error);
-			})
-			.then(function () {
-				// always executed
+				return(null);
 			});
 	}
 
-	public SearchConversation(id_conversation: string) {
+	public async SearchConversation(id_conversation: string) {
 		this.instanceAxios.get(`conversations/${id_conversation}/visitor`)
 			.then(function (response) {
 				// handle success
-				console.log(response.data);
+				//console.log(response.data);
 				ConversationService.SaveConversationJson(response.data,id_conversation);
+				return response.data;
 			})
 			.catch(function (error) {
 				// handle error
 				console.log(error);
-			})
-			.then(function () {
-				// always executed
 			});
 	}
 
@@ -72,37 +69,40 @@ class ConversationService {
 		JsonService.saveJson(`Files/Leads/lead_${objectToSave.id}.json`,objectToSave);
 	}
 
-	public static async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
+	public async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
 		let listIdLeads: Array<string> = [];
 		await JsonService.createFile(`Files/Conversations_x_Leads.json`,`{"data":[`)
-		let promise = new Promise((resolve, reject) => {
+		let promise = new Promise(async (resolve, reject) => {
 			for (let conversationResponse of conversationsResponse) {
-				/*
-				conversationResponse['visitor'].id &&
-				this.SearchConversation(conversationResponse['id']);
-				 */
-				let jsonConversation = JsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
-				let customer_info = '';
-				if(conversationResponse.customer_info && conversationResponse.customer_info.pp)
-					customer_info = conversationResponse.customer_info.pp;
-				if (jsonConversation['data']
-					&& jsonConversation['data'].conversation_details
-					&& jsonConversation['data'].conversation_details.ex_info
-					&& jsonConversation['data'].conversation_details.ex_info['2']
-					&& jsonConversation['data'].conversation_details.ex_info['2'].LEADID
-				)
+
+				if (conversationResponse['visitor'].id)
 				{
-					listIdLeads.push(jsonConversation['data'].conversation_details.ex_info['2'].LEADID);
-					//ConversationService.SaveLeadJson({"conversation_id":conversationResponse.conversation_details.id,lead_id:conversationResponse.conversation_details.ex_info['2'].LEADID,"pp_conversation":customer_info})
-					SaveLeadsJson(`
+					//let jsonConversation = await this.SearchConversation(conversationResponse['id']);
+
+					let jsonConversation = JsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
+					let customer_info = '';
+					if(conversationResponse.customer_info && conversationResponse.customer_info.pp)
+						customer_info = conversationResponse.customer_info.pp;
+					if (jsonConversation['data']
+						&& jsonConversation['data'].conversation_details
+						&& jsonConversation['data'].conversation_details.ex_info
+						&& jsonConversation['data'].conversation_details.ex_info['2']
+						&& jsonConversation['data'].conversation_details.ex_info['2'].LEADID
+					)
+					{
+						listIdLeads.push(jsonConversation['data'].conversation_details.ex_info['2'].LEADID);
+						//console.log(conversationResponse);
+						//ConversationService.SaveLeadJson({"conversation_id":conversationResponse.conversation_details.id,lead_id:conversationResponse.conversation_details.ex_info['2'].LEADID,"pp_conversation":customer_info})
+						SaveLeadsJson(`
 						{
-							"conversation_id":${conversationResponse.conversation_details.id},
-							"lead_id":${conversationResponse.conversation_details.ex_info['2'].LEADID},
+							"conversation_id":${jsonConversation['data'].conversation_details.id},
+							"lead_id":${jsonConversation['data'].conversation_details.ex_info['2'].LEADID},
 							"pp_conversation":"${customer_info}",
-							"url_conversation":"https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/conversations/${conversationResponse.conversation_details.id}/visitor",
-							"url_lead":"https://www.zohoapis.com/crm/v2/Leads/${conversationResponse.conversation_details.ex_info['2'].LEADID}"
+							"url_conversation":"https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/conversations/${jsonConversation['data'].conversation_details.id}/visitor",
+							"url_lead":"https://www.zohoapis.com/crm/v2/Leads/${jsonConversation['data'].conversation_details.ex_info['2'].LEADID}"
 						},
 					`)
+					}
 				}
 			}
 			resolve("");
