@@ -16,8 +16,8 @@ authService.GetToken().then(async (token)=>{
 		{
 			const leadService = new LeadService(token);
 			//leadService.GetAllLead();
-			let jsonLeads = leadService.GetJSONAllConversations();
-			leadService.SearchVisitorsInConversations(jsonLeads['data']);
+			let jsonLeads = leadService.GetJSONAllLeads();
+			leadService.SearchLeadsInJSONtoJSON(jsonLeads['data']);
 		}
 		else if(appsValue['enabled'] && appsKey==='conversation')
 		{

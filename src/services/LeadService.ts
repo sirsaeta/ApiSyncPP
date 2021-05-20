@@ -6,6 +6,10 @@ function SaveLeadsJsonString(stringToAdd: string) {
 	JsonService.updateFile(`Files/Leads.json`,stringToAdd);
 }
 
+function SaveLeadJson(objectToSave: any,id: string) {
+	JsonService.saveJson(`Files/Leads/lead_${id}.json`,objectToSave);
+}
+
 class LeadService {
 	public instanceAxios: AxiosInstance
 
@@ -49,7 +53,7 @@ class LeadService {
 			.then(function (response) {
 				// handle success
 				console.log(response.data);
-				LeadService.SaveLeadJson(response.data,id);
+				SaveLeadJson(response.data,id);
 			})
 			.catch(function (error) {
 				// handle error
@@ -64,59 +68,18 @@ class LeadService {
 		JsonService.saveJson(`Files/${config.apps.lead.fielname}.json`,objectToSave);
 	}
 
-	private static SaveLeadJson(objectToSave: any,id: string) {
-		JsonService.saveJson(`Files/Leads/lead_${id}.json`,objectToSave);
-	}
-
-	public async SearchVisitorsInConversations(conversationsResponse: Array<any>) {
-		await JsonService.createFile(`Files/Leads.json`,`{"data":[`)
-		let promise = new Promise((resolve, reject) => {
-			for (let conversationResponse of conversationsResponse) {
-				/*
-				conversationResponse['visitor'].id &&
-				this.SearchConversation(conversationResponse['id']);
-				 */
-				let jsonConversation = JsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
-				let customer_info = '';
-				if(conversationResponse.customer_info && conversationResponse.customer_info.pp)
-					customer_info = conversationResponse.customer_info.pp;
-				this.SearchLeadInVisitors(jsonConversation['data'], customer_info)
-			}
-			resolve("");
-		});
-
-		if (conversationsResponse && conversationsResponse.length>0)
-			promise.finally(() => {
-				SaveLeadsJsonString("]}")
-			});
-	}
-
-	public GetJSONAllConversations() {
-		return JsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
-	}
-
-	public SearchLeadInVisitors(conversationResponse: any, pp: string) {
-		if (conversationResponse
-			&& conversationResponse.conversation_details
-			&& conversationResponse.conversation_details.ex_info
-			&& conversationResponse.conversation_details.ex_info['2']
-			&& conversationResponse.conversation_details.ex_info['2'].LEADID
-		)
-		{
-			//ConversationService.SaveLeadJson({id:conversationResponse.conversation_details.ex_info['2'].LEADID,"pp":pp})
-			SaveLeadsJsonString(`{"id":${conversationResponse.conversation_details.ex_info['2'].LEADID},"pp":"${pp}"},`)
+	public async SearchLeadsInJSONtoJSON(jsonLeads: Array<any>) {
+		//console.log(jsonLeads);
+		for (let lead of jsonLeads) {
+			//console.log(lead);
+			SaveLeadJson(lead, lead['id']);
 		}
-		//for (let conversationResponse in conversationResponse.) {
-		/*
-		conversationResponse['visitor'].id &&
-		this.SearchConversation(conversationResponse['id']);
-		 */
-		//let jsonService = new JsonService();
-		//jsonService.readJson(`Files/Conversations/${config.apps.conversation.fielname}_${conversationResponse['id']}.json`);
-
-
-		//}
 	}
+
+	public GetJSONAllLeads() {
+		return JsonService.readJson(`Files/${config.apps.lead.fielname}.json`);
+	}
+
 }
 
 export default LeadService;
