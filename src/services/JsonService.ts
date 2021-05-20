@@ -22,7 +22,8 @@ class JsonService {
 	}
 
 	static readJson(path: string) : JSON {
-		if(!this.fileExists)
+		let exist:boolean = this.fileExists(path);
+		if(!exist)
 			return null;
 		let dataJason: Buffer = fs.readFileSync(path);
 		return JSON.parse(dataJason.toString());

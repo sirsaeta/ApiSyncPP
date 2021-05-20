@@ -103,7 +103,7 @@ class ConversationService {
 							"conversation_id":${jsonConversation['data'].conversation_details.id},
 							"lead_id":${LeadID},
 							"pp_conversation":"${customer_info}",
-							"pp_lead":"${jsonLead['pp']}",
+							"pp_lead":"${jsonLead ? jsonLead['pp'] : ''}",
 							"api_url_conversation":"https://salesiq.zoho.com/api/v2/sales1.oceanomedicina/conversations/${jsonConversation['data'].conversation_details.id}/visitor",
 							"api_url_lead":"https://www.zohoapis.com/crm/v2/Leads/${LeadID}",
 							"url_conversation":"https://salesiq.zoho.com/sales1.oceanomedicina/allchats/${jsonConversation['data'].conversation_details.id}",
