@@ -11,6 +11,10 @@ function SaveLeadsJson(stringToAdd: string) {
 	JsonService.updateFile(`Files/Conversations_x_Leads.json`,stringToAdd);
 }
 
+function SaveConversationLeadsDiffJson(stringToAdd: string) {
+	JsonService.updateFile(`Files/Conversations_x_Leads_Diff.json`,stringToAdd);
+}
+
 class ConversationService {
 	private instanceAxios: AxiosInstance;
 
@@ -126,6 +130,46 @@ class ConversationService {
 	public GetJSONAllConversations() {
 		return JsonService.readJson(`Files/${config.apps.conversation.fielname}.json`);
 	}
+
+	public async GetFinalJson() {
+		let jsonConversations_x_Leads = await JsonService.readJson(`Files/Conversations_x_Leads.json`);
+		await JsonService.createFile(`Files/Conversations_x_Leads_Diff.json`,`{"data":[`)
+		let promise = new Promise(async (resolve, reject) => {
+			let saeta: Array<Conversation_x_Lead> = jsonConversations_x_Leads['data'];
+			for (let conversationXLead of saeta) {
+				if (
+					conversationXLead.pp_conversation != "" &&
+					conversationXLead.pp_conversation != conversationXLead.pp_lead
+				)
+					SaveConversationLeadsDiffJson(`
+{
+	"conversation_id":${(conversationXLead.conversation_id)},
+	"lead_id":${(conversationXLead.lead_id)},
+	"pp_conversation":"${(conversationXLead.pp_conversation)}",
+	"pp_lead":"${(conversationXLead.pp_lead)}",
+	"api_url_conversation":"${(conversationXLead.api_url_conversation)}",
+	"api_url_lead":"${(conversationXLead.api_url_lead)}",
+	"url_conversation":"${conversationXLead.url_conversation}",
+	"url_lead":"${(conversationXLead.url_lead)}"
+},`)
+			}
+			resolve("");
+		});
+		promise.finally(() => {
+			SaveConversationLeadsDiffJson("]}")
+		});
+	}
+}
+
+class Conversation_x_Lead {
+	conversation_id: string;
+	lead_id: string;
+	pp_conversation: string;
+	pp_lead: string;
+	api_url_conversation: string;
+	api_url_lead: string;
+	url_conversation: string;
+	url_lead: string;
 }
 
 export default ConversationService;

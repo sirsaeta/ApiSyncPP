@@ -23,10 +23,9 @@ authService.GetToken().then(async (token)=>{
 		{
 			const conversationService = new ConversationService(token);
 			//let jsonConversations = await conversationService.GetAllConversations();
-			let jsonConversations = conversationService.GetJSONAllConversations();
-			jsonConversations && conversationService.SearchVisitorsInConversations(jsonConversations['data']).finally(()=> {
-				console.log("genial")
-			});
+			//let jsonConversations = conversationService.GetJSONAllConversations();
+			/*jsonConversations && await conversationService.SearchVisitorsInConversations(jsonConversations['data']);*/
+			await conversationService.GetFinalJson();
 		}
 	}
 })
